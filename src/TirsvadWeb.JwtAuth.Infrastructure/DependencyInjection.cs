@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TirsvadWeb.JwtAuth.Application.Services;
 using TirsvadWeb.JwtAuth.Infrastructure.Data;
+using TirsvadWeb.JwtAuth.Infrastructure.Services;
 
 namespace TirsvadWeb.JwtAuth.Infrastructure;
 
@@ -16,7 +18,7 @@ public static class DependencyInjection
             )
         );
 
-        //services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
