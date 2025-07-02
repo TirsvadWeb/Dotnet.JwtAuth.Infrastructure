@@ -1,0 +1,86 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <PropertyGroup>
+        <VersionPrefix>0.1.0</VersionPrefix>
+        <PackageId>$(AssemblyName)</PackageId>
+        <Title>TirsvadWeb JwtAuth Infrastructure</Title>
+        <Authors>Jens Tirsvad Nielsen</Authors>
+        <Company>TirsvadWeb</Company>
+        <PackageIcon>logo.png</PackageIcon>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <RepositoryUrl>https://github.com/TirsvadWeb/Dotnet.JwtAuth.Infrastructure</RepositoryUrl>
+        <PackageTags>Console</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <Description>
+        </Description>
+    </PropertyGroup>
+    <PropertyGroup>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <ApplicationIcon>logo.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NugetPath>bin\Debug\</NugetPath>
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <NugetPath>bin\Release\</NugetPath>
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+    <ItemGroup>
+        <Content Include="logo.ico" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\images\logo\logo.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="..\..\LICENSE.txt">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Data\Migrations\" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <PackageReference Include="TirsvadWeb.JwtAuth.Application" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'!='Debug'">
+        <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="0.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+    </ItemGroup>
+    <PropertyGroup>
+        <RelativeNugetPath>..\..\..\..\..\nuget</RelativeNugetPath>
+    </PropertyGroup>
+    <Target Name="CleanNuGetCache" BeforeTargets="Pack">
+        <PropertyGroup>
+            <UserProfile>$(USERPROFILE)</UserProfile>
+            <NuGetCachePath>$(UserProfile)\.nuget\packages\$(PackageId)</NuGetCachePath>
+        </PropertyGroup>
+        <Message Importance="high" Text="Deleting NuGet cache at: $(NuGetCachePath)" />
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(NuGetCachePath)') { Remove-Item -Recurse -Force '$(NuGetCachePath)' }&quot;" />
+    </Target>
+    <Target Name = "DeleteOldNugetPackages" BeforeTargets="Build">
+        <Exec Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" Command="del /Q &quot;$(NugetPath)\*.snupkg&quot;" />
+        <Exec Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" Command="del /Q &quot;$(NugetPath)\*.nupkg&quot;" />
+    </Target>
+    <Target Name="CopyNuGetPackages" AfterTargets="Pack">
+        <Exec Command="if exist &quot;$(RelativeNugetPath)&quot; (copy /Y &quot;$(NugetPath)\*.nupkg&quot; &quot;$(RelativeNugetPath)&quot;)" />
+        <Exec Command="if exist &quot;$(RelativeNugetPath)&quot; (copy /Y &quot;$(NugetPath)\*.snupkg&quot; &quot;$(RelativeNugetPath)&quot;)" />
+    </Target>
+</Project>
+
