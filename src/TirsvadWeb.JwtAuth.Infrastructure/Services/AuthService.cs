@@ -12,8 +12,12 @@ using TirsvadWeb.JwtAuth.Infrastructure.Data;
 
 namespace TirsvadWeb.JwtAuth.Infrastructure.Services;
 
+/// <summary>
+/// Provides authentication services for user registration, login, and token management.
+/// </summary>
 public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAuthService
 {
+    /// <inheritdoc />
     public async Task<TokenRepondseDto?> LoginAsync(UserDto request)
     {
         User? user = await ctx.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
@@ -30,6 +34,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return await CreateTokenResponseAsync(user);
     }
 
+    /// <inheritdoc />
     public async Task<User?> RegisterAsync(UserDto request)
     {
         if (await ctx.Users.AnyAsync(u => u.UserName == request.UserName))
@@ -51,6 +56,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return user;
     }
 
+    /// <inheritdoc />
     public async Task<TokenRepondseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
     {
         User? user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
@@ -60,6 +66,11 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return await CreateTokenResponseAsync(user);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TokenRepondseDto"/> containing a new access token and refresh token for the specified user.
+    /// </summary>
+    /// <param name="user">The user for whom to create the token response.</param>
+    /// <returns>A <see cref="TokenRepondseDto"/> with access and refresh tokens.</returns>
     private async Task<TokenRepondseDto> CreateTokenResponseAsync(User user)
     {
         return new()
@@ -69,6 +80,12 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         };
     }
 
+    /// <summary>
+    /// Validates the provided refresh token for the specified user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="refreshToken">The refresh token to validate.</param>
+    /// <returns>The <see cref="User"/> if the refresh token is valid; otherwise, <c>null</c>.</returns>
     private async Task<User?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
     {
         User? user = await ctx.Users.FindAsync(userId);
@@ -81,6 +98,10 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return user;
     }
 
+    /// <summary>
+    /// Generates a secure random refresh token.
+    /// </summary>
+    /// <returns>A base64-encoded refresh token string.</returns>
     private string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
@@ -91,6 +112,11 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return Convert.ToBase64String(randomNumber);
     }
 
+    /// <summary>
+    /// Generates a new refresh token, saves it to the user, and persists the change.
+    /// </summary>
+    /// <param name="user">The user for whom to generate and save the refresh token.</param>
+    /// <returns>The generated refresh token string.</returns>
     private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
     {
         string refreshToken = GenerateRefreshToken();
@@ -101,6 +127,11 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return refreshToken;
     }
 
+    /// <summary>
+    /// Creates a JWT access token for the specified user.
+    /// </summary>
+    /// <param name="user">The user for whom to create the token.</param>
+    /// <returns>A JWT access token string.</returns>
     private string CreateToken(User user)
     {
         List<Claim> claims = [
@@ -108,7 +139,6 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         ];
 
-        // Replace the problematic line in the CreateToken method with the following:
         SymmetricSecurityKey key = new(
             System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Token"]!)
         );
@@ -126,6 +156,4 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
 
     }
-
-
 }
