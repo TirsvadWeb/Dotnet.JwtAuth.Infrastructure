@@ -50,11 +50,8 @@
             <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Data\Migrations\" />
-    </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <PackageReference Include="TirsvadWeb.JwtAuth.Application"  Version="*" />
+        <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="*" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'!='Debug'">
         <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="0.1.0" />
@@ -74,7 +71,7 @@
         <Message Importance="high" Text="Deleting NuGet cache at: $(NuGetCachePath)" />
         <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;if (Test-Path '$(NuGetCachePath)') { Remove-Item -Recurse -Force '$(NuGetCachePath)' }&quot;" />
     </Target>
-    <Target Name = "DeleteOldNugetPackages" BeforeTargets="Build">
+    <Target Name="DeleteOldNugetPackages" BeforeTargets="Build">
         <Exec Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" Command="del /Q &quot;$(NugetPath)\*.snupkg&quot;" />
         <Exec Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" Command="del /Q &quot;$(NugetPath)\*.nupkg&quot;" />
     </Target>
