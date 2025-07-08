@@ -18,15 +18,15 @@ namespace TirsvadWeb.JwtAuth.Infrastructure.Services;
 public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAuthService
 {
     /// <inheritdoc />
-    public async Task<TokenRepondseDto?> LoginAsync(UserDto request)
+    public async Task<TokenRepondseDto?> LoginAsync(ApplicationUserDto request)
     {
-        User? user = await ctx.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+        ApplicationUser? user = await ctx.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
 
         if (user == null)
         {
             return null;
         }
-        if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash!, request.Password) == PasswordVerificationResult.Failed)
+        if (new PasswordHasher<ApplicationUser>().VerifyHashedPassword(user, user.PasswordHash!, request.Password) == PasswordVerificationResult.Failed)
         {
             return null;
         }
@@ -35,16 +35,16 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     }
 
     /// <inheritdoc />
-    public async Task<User?> RegisterAsync(UserDto request)
+    public async Task<ApplicationUser?> RegisterAsync(ApplicationUserDto request)
     {
         if (await ctx.Users.AnyAsync(u => u.UserName == request.UserName))
         {
             return null;
         }
 
-        User user = new();
+        ApplicationUser user = new();
 
-        var hashedPassword = new PasswordHasher<User>()
+        var hashedPassword = new PasswordHasher<ApplicationUser>()
             .HashPassword(user, request.Password);
 
         user.UserName = request.UserName;
@@ -59,7 +59,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <inheritdoc />
     public async Task<TokenRepondseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
     {
-        User? user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
+        ApplicationUser? user = await ValidateRefreshTokenAsync(request.ApplicationUserId, request.RefreshToken);
         if (user is null)
             return null;
 
@@ -71,7 +71,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// </summary>
     /// <param name="user">The user for whom to create the token response.</param>
     /// <returns>A <see cref="TokenRepondseDto"/> with access and refresh tokens.</returns>
-    private async Task<TokenRepondseDto> CreateTokenResponseAsync(User user)
+    private async Task<TokenRepondseDto> CreateTokenResponseAsync(ApplicationUser user)
     {
         return new()
         {
@@ -86,9 +86,9 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <param name="userId">The unique identifier of the user.</param>
     /// <param name="refreshToken">The refresh token to validate.</param>
     /// <returns>The <see cref="User"/> if the refresh token is valid; otherwise, <c>null</c>.</returns>
-    private async Task<User?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
+    private async Task<ApplicationUser?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
     {
-        User? user = await ctx.Users.FindAsync(userId);
+        ApplicationUser? user = await ctx.Users.FindAsync(userId);
         if (user == null
             || user.RefreshToken != refreshToken
             || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
@@ -102,7 +102,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// Generates a secure random refresh token.
     /// </summary>
     /// <returns>A base64-encoded refresh token string.</returns>
-    private string GenerateRefreshToken()
+    private static string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
@@ -117,7 +117,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// </summary>
     /// <param name="user">The user for whom to generate and save the refresh token.</param>
     /// <returns>The generated refresh token string.</returns>
-    private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+    private async Task<string> GenerateAndSaveRefreshTokenAsync(ApplicationUser user)
     {
         string refreshToken = GenerateRefreshToken();
         user.RefreshToken = refreshToken;
@@ -132,7 +132,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// </summary>
     /// <param name="user">The user for whom to create the token.</param>
     /// <returns>A JWT access token string.</returns>
-    private string CreateToken(User user)
+    private string CreateToken(ApplicationUser user)
     {
         List<Claim> claims = [
             new Claim(ClaimTypes.Name, user.UserName !),

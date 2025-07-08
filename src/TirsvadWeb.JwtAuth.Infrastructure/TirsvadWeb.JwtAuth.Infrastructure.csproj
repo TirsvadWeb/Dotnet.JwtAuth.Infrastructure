@@ -54,7 +54,7 @@
         <Folder Include="Data\Migrations\" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <PackageReference Include="TirsvadWeb.JwtAuth.Application" />
+        <PackageReference Include="TirsvadWeb.JwtAuth.Application"  Version="*" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'!='Debug'">
         <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="0.1.0" />

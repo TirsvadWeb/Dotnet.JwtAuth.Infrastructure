@@ -7,7 +7,7 @@ namespace TirsvadWeb.JwtAuth.Infrastructure.Data;
 /// <summary>
 /// Represents the Entity Framework database context for authentication, including user identity management.
 /// </summary>
-public class AuthDbContext : IdentityDbContext<User>
+public class AuthDbContext : IdentityDbContext<ApplicationUser>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthDbContext"/> class using the specified options.
@@ -24,6 +24,6 @@ public class AuthDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<ApplicationUser>().ToTable("Users");
     }
 }
