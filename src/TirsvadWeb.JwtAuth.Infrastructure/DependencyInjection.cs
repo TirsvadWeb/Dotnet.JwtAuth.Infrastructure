@@ -22,7 +22,7 @@ public static class DependencyInjection
     {
         services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlServer(
-                configuration.GetConnectionString("AuthDatabase"),
+                configuration.GetConnectionString("JwtAuthDatabase"),
                 b => b.MigrationsAssembly("TirsvadWeb.JwtAuth")
             )
         );

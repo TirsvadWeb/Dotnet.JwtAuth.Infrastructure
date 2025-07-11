@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TirsvadWeb.JwtAuth.Domain.Entities;
 
 namespace TirsvadWeb.JwtAuth.Infrastructure.Data;
@@ -7,8 +6,9 @@ namespace TirsvadWeb.JwtAuth.Infrastructure.Data;
 /// <summary>
 /// Represents the Entity Framework database context for authentication, including user identity management.
 /// </summary>
-public class AuthDbContext : IdentityDbContext<ApplicationUser>
+public class AuthDbContext : DbContext
 {
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     /// <summary>
     /// Initializes a new instance of the <see cref="AuthDbContext"/> class using the specified options.
     /// </summary>
