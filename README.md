@@ -4,6 +4,20 @@
 This library s a part of the TirsvadWeb.JwtAuth project and provides persistent storage for JWT tokens.
 It is designed to be used with the TirsvadWeb.JwtAuth library, which handles the authentication and authorization processes.
 
+## Table of Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+    - [NuGet Package](#nuget-package)
+    - [Clone the repo](#clone-the-repo)
+- [Folder Structure](#-folder-structure)
+- [Contributing](#contributing)
+- [Bug / Issue Reporting](#bug--issue-reporting)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+
 ## Features
 
 - **Persistent Storage**: Store JWT tokens in a persistent storage solution.
@@ -29,14 +43,24 @@ Then, run your package manager's install command to download and install the mod
 git clone git@github.com:TirsvadWeb/Dotnet.JwtAuth.Infrastructure.git
 ```
 
+## 📂 Folder Structure
+```plaintext
+Dotnet.JwtAuth.Infrastructure/
+├── 📄 docs/                                 # Documentation files
+│   └── 📄 doxygen                           # Doxygen output
+├── 🖼️ images                                # Images used in documentation
+├── 📂 src                                   # Source code for the library
+│   └── 📦 TirsvadWeb.JwtAuth.Infrastructure # Main library folder
+│       ├── 📦 Data                          # Data access layer
+│       └── 📦 Services                      # Services for JWT token and authenticate management
+└── 📂 tests                                 # Unit tests for the library
+    └── 📦 TestInfrastructure                # Unit tests for the TirsvadWeb.JwtAuth.Infrastructure library
+```
+
 ## Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Bug / Issue Reporting  
 If you encounter a bug or have an issue to report, please follow these steps:  
