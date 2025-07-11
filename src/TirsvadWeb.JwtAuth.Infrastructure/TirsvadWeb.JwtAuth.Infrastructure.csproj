@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup>
-        <VersionPrefix>0.1.0</VersionPrefix>
+        <VersionPrefix>0.1.1</VersionPrefix>
         <PackageId>$(AssemblyName)</PackageId>
         <Title>TirsvadWeb JwtAuth Infrastructure</Title>
         <Authors>Jens Tirsvad Nielsen</Authors>
@@ -14,7 +14,7 @@
         <PackageIcon>logo.png</PackageIcon>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <RepositoryUrl>https://github.com/TirsvadWeb/Dotnet.JwtAuth.Infrastructure</RepositoryUrl>
-        <PackageTags>Console</PackageTags>
+        <PackageTags>Library</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <Description>
@@ -25,11 +25,11 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <ApplicationIcon>logo.ico</ApplicationIcon>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <NugetPath>bin\Debug\</NugetPath>
         <DebugType>portable</DebugType>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <NugetPath>bin\Release\</NugetPath>
         <DebugType>portable</DebugType>
     </PropertyGroup>
@@ -54,11 +54,12 @@
         <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="*" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'!='Debug'">
-        <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="0.1.0" />
+        <PackageReference Include="TirsvadWeb.JwtAuth.Application" Version="0.1.1" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.7" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
     </ItemGroup>
     <PropertyGroup>
         <RelativeNugetPath>..\..\..\..\..\nuget</RelativeNugetPath>

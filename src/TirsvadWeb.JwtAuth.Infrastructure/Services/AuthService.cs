@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using TirsvadWeb.JwtAuth.Application.Dtos;
+using TirsvadWeb.JwtAuth.Application.Models;
 using TirsvadWeb.JwtAuth.Application.Services;
 using TirsvadWeb.JwtAuth.Domain.Entities;
 using TirsvadWeb.JwtAuth.Infrastructure.Data;
@@ -20,7 +20,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <inheritdoc />
     public async Task<TokenRepondseDto?> LoginAsync(ApplicationUserDto request)
     {
-        ApplicationUser? user = await ctx.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+        ApplicationUser user = await ctx.ApplicationUsers.FirstOrDefaultAsync(u => u.Username == request.Username) ?? new();
 
         if (user == null)
         {
@@ -37,7 +37,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <inheritdoc />
     public async Task<ApplicationUser?> RegisterAsync(ApplicationUserDto request)
     {
-        if (await ctx.Users.AnyAsync(u => u.UserName == request.UserName))
+        if (await ctx.ApplicationUsers.AnyAsync(u => u.Username == request.Username))
         {
             return null;
         }
@@ -47,10 +47,10 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
         var hashedPassword = new PasswordHasher<ApplicationUser>()
             .HashPassword(user, request.Password);
 
-        user.UserName = request.UserName;
+        user.Username = request.Username;
         user.PasswordHash = hashedPassword;
 
-        ctx.Users.Add(user);
+        ctx.ApplicationUsers.Add(user);
         await ctx.SaveChangesAsync();
 
         return user;
@@ -59,7 +59,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <inheritdoc />
     public async Task<TokenRepondseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
     {
-        ApplicationUser? user = await ValidateRefreshTokenAsync(request.ApplicationUserId, request.RefreshToken);
+        ApplicationUser user = await ValidateRefreshTokenAsync(request.ApplicationUserId, request.RefreshToken) ?? new();
         if (user is null)
             return null;
 
@@ -88,7 +88,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <returns>The <see cref="User"/> if the refresh token is valid; otherwise, <c>null</c>.</returns>
     private async Task<ApplicationUser?> ValidateRefreshTokenAsync(Guid userId, string refreshToken)
     {
-        ApplicationUser? user = await ctx.Users.FindAsync(userId);
+        ApplicationUser? user = await ctx.ApplicationUsers.FindAsync(userId);
         if (user == null
             || user.RefreshToken != refreshToken
             || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
@@ -104,7 +104,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     /// <returns>A base64-encoded refresh token string.</returns>
     private static string GenerateRefreshToken()
     {
-        var randomNumber = new byte[32];
+        byte[] randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(randomNumber);
@@ -135,7 +135,7 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
     private string CreateToken(ApplicationUser user)
     {
         List<Claim> claims = [
-            new Claim(ClaimTypes.Name, user.UserName !),
+            new Claim(ClaimTypes.Name, user.Username !),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         ];
 
@@ -143,9 +143,9 @@ public class AuthService(AuthDbContext ctx, IConfiguration configuration) : IAut
             System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:Token"]!)
         );
 
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+        SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha512);
 
-        var tokenDescriptor = new JwtSecurityToken(
+        JwtSecurityToken tokenDescriptor = new(
             issuer: configuration["Jwt:Issuer"]!,
             audience: configuration["Jwt:Audience"]!,
             claims: claims,
