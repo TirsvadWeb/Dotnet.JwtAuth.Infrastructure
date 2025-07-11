@@ -32,7 +32,7 @@ public class AuthServiceTests
         context.SaveChanges();
 
         _mockConfig = new Mock<Microsoft.Extensions.Configuration.IConfiguration>();
-        _mockConfig.Setup(c => c["Jwt:Token"]).Returns("super_secret_key_1234567890123456super_secret_key_12345678901234");
+        _mockConfig.Setup(c => c["Jwt:Token"]).Returns("super_secret_key_1234567890123456_super_secret_key_1234567890123456_super_secret_key_1234567890123456");
         _mockConfig.Setup(c => c["Jwt:Issuer"]).Returns("TestIssuer");
         _mockConfig.Setup(c => c["Jwt:Audience"]).Returns("TestAudience");
 
